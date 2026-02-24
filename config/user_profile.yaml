@@ -81,6 +81,12 @@ known_sources:
     always_include: false
     notes: "Include even if paywalled — summarise what's available."
 
+  - name: "Martech Org"
+    type: rss
+    url: "https://martech.org/feed/"
+    always_include: false
+    notes: "Focus on marketing and martech news."
+
   - name: "The Athletic"
     type: imap
     sender: "TheAthletic@e1.theathletic.com"
@@ -88,9 +94,9 @@ known_sources:
     always_include: false
     notes: "Include even if paywalled — summarise what's available."
 
-  - name: "Funcheap SF"
+  - name: "TechinAsia"
     type: rss
-    url: "https://feeds.feedburner.com/funcheapsf_recent_added_events/"
+    url: "https://feeds.feedburner.com/techinasia"
     always_include: false
     notes: "Only include if 3+ relevant events this week."
 
@@ -100,7 +106,7 @@ content_rules:
   stale_after_hours: 48
   prefer_themes_over_sources: true
   # When true, the agent should group items by theme (e.g. "AI agents")
-  # rather than by source (e.g. "Simon Willison")
+  # rather than by source (e.g. "Sam Kuehnle")
 
 agent_directives:
   enable_web_search: true  # requires BRAVE_SEARCH_API_KEY; returns [] gracefully if not set
