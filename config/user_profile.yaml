@@ -34,7 +34,7 @@ known_sources:
     always_include: false
     notes: "Good for headlines. Extract top 4-5 AI/tech stories."
 
-    - name: "TLDR Marketing Newsletter"
+  - name: "TLDR Marketing Newsletter"
     type: imap
     sender: "dan@tldrnewsletter.com"
     subject_keyword: "TLDR"
