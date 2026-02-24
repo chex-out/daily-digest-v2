@@ -1,32 +1,31 @@
 user:
-  name: Linus
-  role: "MBA student and aspiring Solutions Architect"
-  email: linus.seah@kellogg.northwestern.edu
-  location: "San Francisco, CA"
+  name: Abraham
+  role: "Digital Marketer and aspiring Customer Lifecycle Marketer"
+  email: lee.abraham.e@gmail.com
+  location: "Singapore"
 
 interests:
   high_priority:
     - AI agents and agentic systems
-    - LLM application architecture and best practices
-    - developer tools and DX (developer experience)
     - AI research breakthroughs and new model releases
-    - robotics and embodied AI
+    - digital marketing and marketing automation
+    - customer data platforms and CDP
+    - B2B marketing strategy
   medium_priority:
-    - venture capital and startup funding rounds
-    - product management practices
-    - product launches (Product Hunt, new tools)
-    - MBA / business strategy
+    - AI applications in marketing
+    - marketing practices
   low_priority:
     - general tech news (only if significant)
-    - San Francisco local events (tech meetups, AI events preferred)
-    - cheap/free SF activities
+    - Premier League and Formula 1 news
+    - Singapore local events (tech meetups, AI events preferred)
+    - cheap/free Singapore activities
 
 known_sources:
-  - name: "Simon Willison's Blog"
+  - name: "Sam Kuehnle's Blog"
     type: rss
-    url: "https://simonwillison.net/atom/everything/"
-    always_include: true
-    notes: "High signal. Always include top 3-4 posts."
+    url: "https://www.samkuehnle.com/feed"
+    always_include: false
+    notes: "Usually has insightful reflections on marketing."
 
   - name: "TLDR Newsletter"
     type: imap
@@ -35,23 +34,58 @@ known_sources:
     always_include: false
     notes: "Good for headlines. Extract top 4-5 AI/tech stories."
 
-  - name: "TechCrunch Venture"
+    - name: "TLDR Marketing Newsletter"
+    type: imap
+    sender: "dan@tldrnewsletter.com"
+    subject_keyword: "TLDR"
+    always_include: true
+    notes: "Good for headlines. Extract top 4-5 marketing stories."
+
+  - name: "TechCrunch"
     type: rss
     url: "https://techcrunch.com/feed/"
     always_include: false
-    notes: "Focus on AI/ML startup funding, skip general tech."
+    notes: "Focus on AI/ML news, skip funding news."
 
   - name: "Product Hunt"
     type: rss
     url: "https://www.producthunt.com/feed"
     always_include: false
-    notes: "Top 5 most interesting new products. Skip kitchen/lifestyle."
+    notes: "Top 5 most interesting new products."
 
   - name: "Lenny's Newsletter"
     type: imap
     sender: "lenny@lennysnewsletter.com"
     subject_keyword: "Lenny"
     always_include: true
+    notes: "Include even if paywalled — summarise what's available."
+
+  - name: "Elena's Growth Scoop"
+    type: imap
+    sender: "elenaverna@substack.com"
+    subject_keyword: "Elena's Growth Scoop"
+    always_include: false
+    notes: "Include even if paywalled — summarise what's available."
+
+  - name: "Dan Hock's Essays"
+    type: imap
+    sender: "danhock@substack.com"
+    subject_keyword: "Dan Hock"
+    always_include: false
+    notes: "Include even if paywalled — summarise what's available."
+
+  - name: "The Skip"
+    type: imap
+    sender: "theskip@substack.com"
+    subject_keyword: "The Skip"
+    always_include: false
+    notes: "Include even if paywalled — summarise what's available."
+
+  - name: "The Athletic"
+    type: imap
+    sender: "TheAthletic@e1.theathletic.com"
+    subject_keyword: "The Briefing"
+    always_include: false
     notes: "Include even if paywalled — summarise what's available."
 
   - name: "Funcheap SF"
