@@ -29,32 +29,56 @@ import anthropic
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 RESEND_API_KEY    = os.environ["RESEND_API_KEY"]
-GMAIL_ADDRESS     = os.environ["GMAIL_ADDRESS"]
-GMAIL_APP_PASS    = os.environ["GMAIL_APP_PASS"]
+GMAIL_ADDRESS     = os.environ.get("GMAIL_ADDRESS", "")
+GMAIL_APP_PASS    = os.environ.get("GMAIL_APP_PASS", "")
 DIGEST_TO         = os.environ.get("DIGEST_TO", GMAIL_ADDRESS)
 ANTHROPIC_MODEL   = "claude-haiku-4-5"
 
 SOURCES = [
-    ("simon",       "rss",  "https://simonwillison.net/atom/everything/",                  8),
-    ("techcrunch",  "rss",  "https://techcrunch.com/feed/",                               10),
-    ("producthunt", "rss",  "https://www.producthunt.com/feed",                           20),
-    ("funcheap",    "rss",  "https://feeds.feedburner.com/funcheapsf_recent_added_events/", 20),
-    ("tldr",        "imap", ("dan@tldrnewsletter.com", "TLDR"),                            None),
-    ("lenny",       "imap", ("lenny@lennysnewsletter.com", "Lenny"),                       None),
+    # RSS sources
+    ("samkuehnle",   "rss",  "https://www.samkuehnle.com/feed",                            10),
+    ("techcrunch",   "rss",  "https://techcrunch.com/feed/",                               10),
+    ("producthunt",  "rss",  "https://www.producthunt.com/feed",                           20),
+    ("martech",      "rss",  "https://martech.org/feed/",                                  10),
+    ("techinasia",   "rss",  "https://feeds.feedburner.com/techinasia",                    10),
+    # IMAP sources
+    ("tldr",         "imap", ("dan@tldrnewsletter.com",     "TLDR"),                       None),
+    ("tldrmarketing","imap", ("dan@tldrnewsletter.com",     "TLDR Marketing"),              None),
+    ("lenny",        "imap", ("lenny@lennysnewsletter.com", "Lenny"),                      None),
+    ("elena",        "imap", ("elenaverna@substack.com",    "Elena's Growth Scoop"),        None),
+    ("danhock",      "imap", ("danhock@substack.com",       "Dan Hock"),                   None),
+    ("theskip",      "imap", ("theskip@substack.com",       "The Skip"),                   None),
+    ("athletic",     "imap", ("TheAthletic@e1.theathletic.com", "The Briefing"),           None),
 ]
 
 SECTION_LABELS = {
-    "simon":       "AI News: Simon Willison",
-    "techcrunch":  "Tech & Funding: TechCrunch",
-    "producthunt": "Tech & Product: Product Hunt",
-    "funcheap":    "Fun in SF: Funcheap",
-    "tldr":        "AI News: TLDR",
-    "lenny":       "Product: Lenny's Newsletter",
+    "samkuehnle":    "Marketing: Sam Kuehnle's Blog",
+    "techcrunch":    "Tech News: TechCrunch",
+    "producthunt":   "New Products: Product Hunt",
+    "martech":       "Martech: Martech.org",
+    "techinasia":    "Asia Tech: Tech in Asia",
+    "tldr":          "AI & Tech Headlines: TLDR",
+    "tldrmarketing": "Marketing Headlines: TLDR Marketing",
+    "lenny":         "Product & Growth: Lenny's Newsletter",
+    "elena":         "Growth: Elena's Growth Scoop",
+    "danhock":       "Essays: Dan Hock",
+    "theskip":       "Leadership: The Skip",
+    "athletic":      "Sports: The Athletic Briefing",
 }
 
 ICONS = {
-    "simon": "🔬", "tldr": "📰", "techcrunch": "💰",
-    "producthunt": "🚀", "lenny": "💡", "funcheap": "🎉",
+    "samkuehnle":    "✍️",
+    "techcrunch":    "💻",
+    "producthunt":   "🚀",
+    "martech":       "📊",
+    "techinasia":    "🌏",
+    "tldr":          "📰",
+    "tldrmarketing": "📣",
+    "lenny":         "💡",
+    "elena":         "📈",
+    "danhock":       "🖊️",
+    "theskip":       "⏭️",
+    "athletic":      "⚽",
 }
 
 # ---------------------------------------------------------------------------
@@ -71,6 +95,8 @@ def fetch_rss(url: str, limit: int) -> str:
 
 
 def fetch_imap(sender_kw: str, subject_kw: str) -> str:
+    if not GMAIL_ADDRESS or not GMAIL_APP_PASS:
+        return "[Gmail credentials not configured]"
     try:
         mail = imaplib.IMAP4_SSL("imap.gmail.com")
         mail.login(GMAIL_ADDRESS, GMAIL_APP_PASS)
@@ -190,7 +216,7 @@ def build_html(sections: dict, fallback_note: bool = True) -> str:
 <html><head><meta charset="utf-8"></head>
 <body>
   <div style="{body_style}">
-    <h1 style="font-size:22px; font-weight:700; margin-bottom:4px;">Good morning ☀️</h1>
+    <h1 style="font-size:22px; font-weight:700; margin-bottom:4px;">Good morning, Abraham ☀️</h1>
     <p style="color:#6b7280; margin-top:0; margin-bottom:24px;">Your daily digest for {today}</p>
     {fallback_banner}
     {section_blocks}
@@ -232,12 +258,18 @@ def main(dry_run: bool = False) -> None:
 
     summaries: dict[str, str] = {}
     prompts = {
-        "simon":       f"Summarise the 3-4 most interesting AI/tech posts. Include title and URL.\n\n{raw['simon'] or 'No content.'}",
-        "tldr":        f"Extract 4-5 most important AI/tech stories. One bullet, one sentence each.\n\n{raw['tldr'][:3000] or 'No email.'}",
-        "techcrunch":  f"Pick 4-5 most notable startup funding news. Include company, amount, URL.\n\n{raw['techcrunch'] or 'No content.'}",
-        "producthunt": f"Pick top 5 most interesting new products. Name, what it does, URL.\n\n{raw['producthunt'] or 'No content.'}",
-        "lenny":       f"Summarise key ideas from this Lenny's Newsletter in 4-5 bullets.\n\n{raw['lenny'][:3000] or 'No email.'}",
-        "funcheap":    f"Pick 3 most fun/interesting cheap SF events this week. Name, date, URL.\n\n{raw['funcheap'] or 'No content.'}",
+        "samkuehnle":    f"Summarise the 2-3 most insightful marketing reflections or ideas. Include title and URL.\n\n{raw['samkuehnle'] or 'No content.'}",
+        "techcrunch":    f"Pick 3-4 most notable AI/ML or tech product stories. Skip pure funding news. Include company and URL.\n\n{raw['techcrunch'] or 'No content.'}",
+        "producthunt":   f"Pick top 5 most interesting new products, especially any relevant to marketing or AI. Name, what it does, URL.\n\n{raw['producthunt'] or 'No content.'}",
+        "martech":       f"Summarise 3-4 most relevant martech or marketing automation stories. Include key takeaway and URL.\n\n{raw['martech'] or 'No content.'}",
+        "techinasia":    f"Summarise 3-4 most relevant Southeast Asia or Singapore tech stories. Include company and URL.\n\n{raw['techinasia'] or 'No content.'}",
+        "tldr":          f"Extract 4-5 most important AI/tech stories. One bullet, one sentence each.\n\n{raw['tldr'][:3000] or 'No email.'}",
+        "tldrmarketing": f"Extract 4-5 most important marketing stories. One bullet, one sentence each.\n\n{raw['tldrmarketing'][:3000] or 'No email.'}",
+        "lenny":         f"Summarise key ideas from this Lenny's Newsletter in 4-5 bullets.\n\n{raw['lenny'][:3000] or 'No email.'}",
+        "elena":         f"Summarise the main growth or marketing insight in 3-4 bullets. Note if paywalled.\n\n{raw['elena'][:3000] or 'No email.'}",
+        "danhock":       f"Summarise the main argument or idea from this essay in 3-4 bullets. Note if paywalled.\n\n{raw['danhock'][:3000] or 'No email.'}",
+        "theskip":       f"Summarise the key leadership or career insight in 3-4 bullets. Note if paywalled.\n\n{raw['theskip'][:3000] or 'No email.'}",
+        "athletic":      f"Summarise top 3-4 sports stories, prioritising Premier League and Formula 1. Include key result or development.\n\n{raw['athletic'][:3000] or 'No email.'}",
     }
 
     for key, prompt in prompts.items():
